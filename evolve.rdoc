@@ -1,0 +1,5 @@
+= evolve
+
+Generate this with
+    evolve rdoc
+After you have described your command line interface
