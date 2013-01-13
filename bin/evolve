@@ -36,10 +36,11 @@ command :play do |c|
   c.action do |global_options,options,args|
 
     # Your command logic here
-    puts "Playing"
     s = Simulation.new
-    
-    s.attach_listener ConsoleListener.new({})
+    s.attach_listener Listeners::ConsoleListener.new(
+        logging_level: Listeners::STATUS
+        )
+    s.initialize_world
 
     s.iterate(10)
      
@@ -87,6 +88,9 @@ end
 on_error do |exception|
   # Error logic here
   # return false to skip default error handling
+  exception.backtrace.each do |trace|
+    STDERR.puts trace
+  end
   true
 end
 
