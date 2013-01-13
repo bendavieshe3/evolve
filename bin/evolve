@@ -2,7 +2,8 @@
 require 'gli'
 begin # XXX: Remove this begin/rescue before distributing your app
 require 'evolve'
-rescue LoadError
+rescue LoadError => l
+  STDERR.puts l.message
   STDERR.puts "In development, you need to use `bundle exec bin/evolve` to run your app"
   STDERR.puts "At install-time, RubyGems will make sure lib, etc. are in the load path"
   STDERR.puts "Feel free to remove this message from bin/evolve now"
@@ -11,7 +12,7 @@ end
 
 include GLI::App
 
-program_desc 'Describe your application here'
+program_desc 'A program simlulating an evolutionary process in a population'
 
 version Evolve::VERSION
 
@@ -23,9 +24,34 @@ default_value 'the default'
 arg_name 'The name of the argument'
 flag [:f,:flagname]
 
-desc 'Describe play here'
+desc 'Execute a number of iterations of life within the population'
 arg_name 'Describe arguments to play here'
 command :play do |c|
+  c.desc 'Describe a switch to play'
+  c.switch :s
+
+  c.desc 'Describe a flag to play'
+  c.default_value 'default'
+  c.flag :f
+  c.action do |global_options,options,args|
+
+    # Your command logic here
+    puts "Playing"
+    s = Simulation.new
+    
+    s.attach_listener ConsoleListener.new({})
+
+    s.iterate(10)
+     
+    # If you have any errors, just raise them
+    # raise "that command made no sense"
+
+  end
+end
+
+desc 'Execute a number of iterations of life within the population'
+arg_name 'Describe arguments to play here'
+command :example do |c|
   c.desc 'Describe a switch to play'
   c.switch :s
 
