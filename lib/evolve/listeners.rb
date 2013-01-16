@@ -53,6 +53,10 @@ class ConsoleListener < Listener
             interim_report_frequency: 5           
         }
         @options = @defaults.merge(options)
+        
+        if not (DEBUG..ERROR).include? logging_level
+          raise "Logging level `#{logging_level}` is not valid"
+        end
     end
 
     def options
@@ -67,7 +71,7 @@ class ConsoleListener < Listener
         iteration_number = event[:iteration_number]
         population = event[:world].population
         if reporting_iteration? iteration_number
-            STDOUT.puts "#{iteration_number}: #{population.length} critters"
+            status "#{iteration_number}: #{population.length} critters"
         end
         info "Starting Iteration #{iteration_number}"
     end
@@ -78,16 +82,32 @@ class ConsoleListener < Listener
     end
     
     def simulation_start(event)
-        STDOUT.puts "Simulation starting"
+        status "Simulation Starting"
+        info "Showing Information Messages"
+    end
+
+    def simulation_end(event)
+        status "Simulation Complete"
+        status "Critter Report"
+        status "Critter\tHP\tfood"
+        for c in event[:world].population
+          STDOUT.puts "#{c.name}\t#{c.hp}/#{c.max_hp}\t#{c.food}/#{c.max_food}"
+        end
     end
 
     def critter_dead(event)
         dead_critter = event[:payload][:dead]
         info "Critter #{dead_critter.name} has died"
     end
+    
+    def critter_fed(event)
+        fed_critter = event[:payload][:critter]
+        food = event[:payload][:food]
+        info "Critter #{fed_critter.name} has fed (#{food})"
+    end    
 
     def info(event_or_message)
-        log(INFO, message_from(event_or_message))
+        log(INFO, "\t" + message_from(event_or_message))
     end
     
     def status(event_or_message)

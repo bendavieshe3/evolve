@@ -15,7 +15,9 @@ class World
     
         case event_type
         when :critter_dead
-            @population.delete payload[:dead]
+          @population.delete payload[:dead]
+        when :critter_action
+          payload[:critter].feed(1)
         end
     
         send_event(event)
@@ -41,11 +43,16 @@ class OnePlaceWorld < World
         
         #determine and inflict entropy damage
         for critter in @population
-            entropy_role = 1 + rand(100)
-            if entropy_role <= CHANCE_OF_ENTROPY_DAMAGE
-                critter.damage 1
-            end
-        end        
+          entropy_role = 1 + rand(100)
+          if entropy_role <= CHANCE_OF_ENTROPY_DAMAGE
+            critter.damage 1
+          end
+        end
+        
+        #give each critter a chance to act
+        for critter in @population
+          critter.turn
+        end
         
     end
 

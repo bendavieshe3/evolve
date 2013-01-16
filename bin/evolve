@@ -16,33 +16,34 @@ program_desc 'A program simlulating an evolutionary process in a population'
 
 version Evolve::VERSION
 
-desc 'Describe some switch here'
-switch [:s,:switch]
+desc 'Show information messages about the simulation'
+switch [:i,:info]
 
-desc 'Describe some flag here'
-default_value 'the default'
-arg_name 'The name of the argument'
-flag [:f,:flagname]
+#desc 'Describe some switch here'
+#switch ["s",:switch]
+
+#desc 'Describe some flag here'
+#default_value 'the default'
+#arg_name 'The name of the argument'
+#flag [:f,:flagname]
 
 desc 'Execute a number of iterations of life within the population'
-arg_name 'Describe arguments to play here'
+arg_name 'saved_simulation_file.evolve'
 command :play do |c|
-  c.desc 'Describe a switch to play'
-  c.switch :s
-
-  c.desc 'Describe a flag to play'
-  c.default_value 'default'
-  c.flag :f
+  
   c.action do |global_options,options,args|
+
+    #puts global_options
+    #puts options
 
     # Your command logic here
     s = Simulation.new
     s.attach_listener Listeners::ConsoleListener.new(
-        logging_level: Listeners::STATUS
+        logging_level: global_options[:logging_level]
         )
     s.initialize_world
 
-    s.iterate(10)
+    s.simulate(10)
      
     # If you have any errors, just raise them
     # raise "that command made no sense"
@@ -76,6 +77,22 @@ pre do |global,command,options,args|
   # chosen command
   # Use skips_pre before a command to skip this block
   # on that command only
+
+  # Set defaults
+  @defaults = {
+    logging_level: Listeners::STATUS
+  }
+
+  # Interpret Parameters
+  if global[:info]
+    global[:logging_level] = Listeners::INFO
+  end
+
+  # apply defaults
+  @defaults.each do | k,v |
+    global[k] = v unless global[k]
+  end 
+
   true
 end
 

@@ -9,6 +9,7 @@ class Simulation
         @listeners = []
         @world = nil
         @iteration = 0
+        STDOUT.puts 'Preparing Simulation'
 
     end
         
@@ -28,7 +29,7 @@ class Simulation
         send_event(:info, "Created #{INITIAL_NUMBER_OF_CRITTERS} critters")
     end
     
-    def iterate(number_of_iterations)
+    def simulate(number_of_iterations)
 
         send_event(:simulation_start)
         send_event(:status, "Iterating #{number_of_iterations} times!")    
@@ -45,7 +46,7 @@ class Simulation
     end
     
     def perform_iteration
-        @world.turn #prompt world to conduct natural non-critter processes
+        @world.turn #prompt world to conduct natural processes
     end
     
     def send_event(event_type, payload=nil)
